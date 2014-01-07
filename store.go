@@ -198,7 +198,7 @@ func (s *Store) GetCollectionCreateEmpty(name string) (bool, *Collection) {
 	collection := s.GetCollection(name)
 
 	if collection != nil {
-		collection = s.SetCollection("Device", nil)
+		collection = s.SetCollection(name, nil)
 		return true, collection
 	} else {
 		return false, collection
