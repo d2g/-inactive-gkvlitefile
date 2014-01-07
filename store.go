@@ -164,7 +164,7 @@ func compactStoreFile(filename string) error {
 func (s *Store) MakePrivateCollection(compare gkvlite.KeyCompare) *Collection {
 	collection := s.Store.MakePrivateCollection(compare)
 	wrappedCollection := Collection{}
-	wrappedCollection.Collection = *collection
+	wrappedCollection.Collection = collection
 	wrappedCollection.Channel = s.channel
 	return &wrappedCollection
 }
@@ -172,7 +172,7 @@ func (s *Store) MakePrivateCollection(compare gkvlite.KeyCompare) *Collection {
 func (s *Store) SetCollection(name string, compare gkvlite.KeyCompare) *Collection {
 	collection := s.Store.SetCollection(name, compare)
 	wrappedCollection := Collection{}
-	wrappedCollection.Collection = *collection
+	wrappedCollection.Collection = collection
 	wrappedCollection.Channel = s.channel
 	return &wrappedCollection
 }
@@ -183,7 +183,7 @@ func (s *Store) GetCollection(name string) *Collection {
 		return nil
 	} else {
 		wrappedCollection := Collection{}
-		wrappedCollection.Collection = *collection
+		wrappedCollection.Collection = collection
 		wrappedCollection.Channel = s.channel
 		return &wrappedCollection
 	}
@@ -197,7 +197,7 @@ func (s *Store) GetCollection(name string) *Collection {
 func (s *Store) GetCollectionCreateEmpty(name string) (bool, *Collection) {
 	collection := s.GetCollection(name)
 
-	if collection != nil {
+	if collection == nil {
 		collection = s.SetCollection(name, nil)
 		return true, collection
 	} else {

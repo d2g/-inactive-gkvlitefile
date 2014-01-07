@@ -3,12 +3,13 @@ package gkvlitefile
 import (
 	"encoding/json"
 	"github.com/steveyen/gkvlite"
+	"log"
 	"math/rand"
 	"sync"
 )
 
 type Collection struct {
-	gkvlite.Collection
+	*gkvlite.Collection
 	Channel    chan bool
 	writeMutex sync.Mutex
 
@@ -34,7 +35,7 @@ func (t *Collection) Set(key []byte, val []byte) error {
 }
 
 func (t *Collection) Marshal() MarshalFunction {
-	if t.Marshal != nil {
+	if t.marshal != nil {
 		return t.marshal
 	} else {
 		return json.Marshal
@@ -46,7 +47,7 @@ func (t *Collection) SetMarshal(override MarshalFunction) {
 }
 
 func (t *Collection) Unmarshal() UnmarshalFunction {
-	if t.Unmarshal != nil {
+	if t.unmarshal != nil {
 		return t.unmarshal
 	} else {
 		return json.Unmarshal
@@ -58,9 +59,7 @@ func (t *Collection) SetUnmarshal(override UnmarshalFunction) {
 }
 
 func (t *Collection) SetObject(key string, object interface{}) error {
-	marshalFunction := t.Marshal()
-
-	byteObject, err := marshalFunction(object)
+	byteObject, err := t.Marshal()(object)
 
 	if err != nil {
 		return err
@@ -77,10 +76,9 @@ func (t *Collection) GetObject(key string, object interface{}) error {
 	}
 
 	if byteObject != nil {
-		unmarshalFunction := t.Unmarshal()
-
-		err = unmarshalFunction(byteObject, object)
+		err = t.Unmarshal()(byteObject, &object)
 		if err != nil {
+			log.Println(err.Error())
 			return err
 		}
 	}
